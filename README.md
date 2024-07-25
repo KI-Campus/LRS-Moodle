@@ -27,7 +27,7 @@ After installation, you need to configure the plugin with your external LRS sett
 
 ### Step 3: Generate a Web Service Token
 
-1. Go to `Site administration > Plugins > Web services > Manage tokens`.
+1. Go to `Site administration > Server > Web services > Manage tokens`.
 2. Create a new token for the user account that will be sending data to the LRS.
 3. Note down the generated token.
 
