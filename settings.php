@@ -5,12 +5,12 @@ defined('MOODLE_INTERNAL') || die();
 if ($hassiteconfig) {  // This checks if the user can edit site configuration
     $settings = new admin_settingpage('local_openlrs', get_string('pluginname', 'local_openlrs'));
 
-    // Add a field for the External Website Path
+    // Add a field for the External openLRS Path
     $settings->add(new admin_setting_configtext(
         'local_openlrs/externalpath',
         get_string('externalpath', 'local_openlrs'),
         get_string('externalpath_desc', 'local_openlrs'),
-        'https://example.com',  // Default value
+        'https://www.example.com/',  // Default value
         PARAM_URL
     ));
 
