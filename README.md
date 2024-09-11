@@ -1,12 +1,13 @@
 # openLRS Plugin for Moodle
 
-The openLRS Plugin for Moodle provides real-time analytics and reporting capabilities by capturing xAPI events from H5P content. This plugin allows Moodle administrators to send xAPI data to an external openLRS for further analysis.
+The openLRS Plugin for Moodle provides real-time analytics and reporting capabilities by capturing xAPI events from H5P content. This plugin allows Moodle administrators to send xAPI data to an external openLRS for further analysis. It also features magic links for logging admins & teachers into openLRS.
 
 ## Features
 
 - Captures xAPI events from H5P content within Moodle.
 - Configurable settings for connecting to an openLRS system.
 - Secure communication through a secret key.
+- Magic links for logging admins & teachers into openLRS.
 
 ## Installation
 

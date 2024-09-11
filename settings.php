@@ -10,7 +10,7 @@ if ($hassiteconfig) {  // This checks if the user can edit site configuration
         'local_openlrs/externalpath',
         get_string('externalpath', 'local_openlrs'),
         get_string('externalpath_desc', 'local_openlrs'),
-        'https://example.com',  // Default value
+        'https://www.example.com/',  // Default value
         PARAM_URL
     ));
 

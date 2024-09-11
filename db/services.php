@@ -34,11 +34,29 @@ $functions = array(
         'type'        => 'write',
         'ajax'        => true,
     ),
+
+    'local_openlrs_is_teacher_or_admin' => array(
+        'classname'   => 'local_openlrs_external',
+        'methodname'  => 'is_teacher_or_admin',
+        'classpath'   => 'local/openlrs/externallib.php',
+        'description' => 'Check if user is a teacher or admin',
+        'type'        => 'write',
+        'ajax'        => true,
+    ),
+
+    'local_openlrs_generate_magic_login_token' => array(
+        'classname'   => 'local_openlrs_external',
+        'methodname'  => 'generate_magic_login_token',
+        'classpath'   => 'local/openlrs/externallib.php',
+        'description' => 'Generate a magic login token',
+        'type'        => 'write',
+        'ajax'        => true,
+    ),
 );
 
 $services = array(
     'openLRS Plugin service' => array(
-        'functions' => array ('local_openlrs_handle_data'),
+        'functions' => array ('local_openlrs_handle_data', 'local_openlrs_is_teacher_or_admin', 'local_openlrs_generate_magic_login_token'),
         'restrictedusers' => 0,
         'enabled'=>1,
     ),

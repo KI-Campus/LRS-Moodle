@@ -31,6 +31,7 @@ require_once($CFG->libdir . '/filelib.php');
 
 class local_openlrs_external extends external_api {
 
+    // Functions to handle xAPI data
     public static function handle_data_parameters() {
         return new external_function_parameters(
             array('data' => new external_value(PARAM_RAW, 'The JSON data'))
@@ -103,7 +104,7 @@ class local_openlrs_external extends external_api {
 
         $curl->setHeader($header);
         
-        $response = $curl->post($externalpath, $data);
+        $response = $curl->post($externalpath . "lrs", $data);
        
         return array('status' => 'success', 'response' => $response);
     }
@@ -115,5 +116,120 @@ class local_openlrs_external extends external_api {
                 'response' => new external_value(PARAM_RAW, 'Response from the openLRS website')
             )
         );
+    }
+
+    // Functions to get is Teacher or is Admin
+    public static function is_teacher_or_admin_parameters() {
+        return new external_function_parameters(
+            array('courseid' => new external_value(PARAM_RAW, 'The course ID'))
+        );
+    }
+
+    public static function is_teacher_or_admin($courseid) {
+        self::validate_parameters(self::is_teacher_or_admin_parameters(),
+                array('courseid' => $courseid));
+
+        // Sanitize $courseid
+        $courseid = intval($courseid); // Convert to integer for basic validation
+
+        // Get the course context
+        $context = context_course::instance($courseid);
+
+        // Check if the user is a teacher or admin in the course
+        if (has_capability('moodle/course:update', $context) || is_siteadmin()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function is_teacher_or_admin_returns() {
+        return new external_value(PARAM_BOOL, 'Is teacher or admin');
+    }
+    
+    // Functions to generate a magic login token
+    public static function generate_magic_login_token_parameters() {
+        return new external_function_parameters(
+            array('courseid' => new external_value(PARAM_RAW, 'The course ID'))
+        );
+    }
+
+    public static function generate_magic_login_token($courseid) {
+        self::validate_parameters(self::generate_magic_login_token_parameters(),
+                array('courseid' => $courseid));
+
+        // Sanitize $courseid
+        $courseid = intval($courseid); // Convert to integer for basic validation
+
+        // Get the course context
+        $context = context_course::instance($courseid);
+
+        // Check if the user is a teacher or admin in the course
+        if (has_capability('moodle/course:update', $context) || is_siteadmin()) {
+
+             // Get settings
+            $externalpath = get_config('local_openlrs', 'externalpath');
+            $secretkey = get_config('local_openlrs', 'secretkey');
+            $consumerid = get_config('local_openlrs', 'consumerid');
+
+            if (empty($externalpath) || empty($secretkey) || empty($consumerid)) {
+                throw new moodle_exception('Missing required OpenLRS configuration');
+            }
+
+            if (empty($courseid)) {
+                throw new moodle_exception('Invalid course ID');
+            }
+
+            $message = [
+                'courseId' => (string)$courseid,
+                'consumerId' => $consumerid,
+            ];
+
+            if (empty($message['courseId']) || empty($message['consumerId'])) {
+                throw new moodle_exception('Invalid course or consumer data');
+            }
+
+            $signature = hash_hmac('sha1', json_encode($message), $secretkey);
+
+            $externalpathtempusercreate = $externalpath . 'lrs/create_temp_user';
+
+            $ch = curl_init($externalpathtempusercreate );
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($message));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'X-Signature: ' . $signature
+            ]);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $response = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            // Initialize token
+            $token = false;
+
+            if ($http_code == 200) {
+                $data = json_decode($response, true);
+                if (isset($data['success']) && $data['success'] && isset($data['user']) ) {
+                    $token = [
+                        'user' => $data['user'],
+                        'lrsUrl' => $externalpath
+                    ];
+                }
+            }
+
+            if ($http_code != 200 || !$token) {
+                throw new moodle_exception('Failed to create temp user: ' . $response);
+            }
+
+            return json_encode($token);
+        } else {
+            return false;
+        }
+    }
+
+    public static function generate_magic_login_token_returns() {
+        return new external_value(PARAM_RAW, 'Magic login token details in JSON format');
     }
 }
