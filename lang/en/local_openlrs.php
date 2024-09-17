@@ -27,8 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['pluginname'] = 'openLRS Plugin';
 
-$string['externalpath'] = 'External Website Path';
-$string['externalpath_desc'] = 'The URL of the external website to which data will be sent.';
+$string['externalpath'] = 'External openLRS Path';
+$string['externalpath_desc'] = 'The URL of the external openLRS to which data will be sent. Make sure to include the trailing slash.';
 $string['secretkey'] = 'Secret Key';
 $string['secretkey_desc'] = 'The secret key used for secure communications.';
 $string['consumerid'] = 'Consumer ID';

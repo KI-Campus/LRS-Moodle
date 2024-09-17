@@ -103,7 +103,7 @@ class local_openlrs_external extends external_api {
 
         $curl->setHeader($header);
         
-        $response = $curl->post($externalpath, $data);
+        $response = $curl->post($externalpath . "lrs", $data);
        
         return array('status' => 'success', 'response' => $response);
     }
